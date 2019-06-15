@@ -1,0 +1,98 @@
+{% load rest_framework %}
+<!DOCTYPE html>
+<html>
+ <head>
+   <title>students api</title>
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+ </head>
+<body>
+	<div class="container">
+		<h2>Django RestAPI CRUD</h2>
+		<table class="table" id="records_table" border='1'>
+	    <tr class="bg-primary">
+	        <th>Id</th>
+	        <th>First Name</th>
+	        <th id="maya">Last Name</th>
+	        <th>Age</th>
+	        <th>Gender</th>
+	        <th>Action</th>
+	    </tr>
+		</table>
+        <div class="text-right">
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">Create</button>
+        </div>
+	</div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script>
+// CSRF code
+    function getCookie(name) {
+        var cookieValue = null;
+        var i = 0;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (i; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    // Use csrf token while doing post request, this will prevent 500 Server Error
+    $.ajaxSetup({
+        crossDomain: false, // obviates need for sameOrigin test
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    }); 
+
+</script>
+    <script type="text/javascript">
+    $.ajax({
+             url : "http://localhost:8000/api/",
+             dataType: "json",
+             success : function (response) {
+             			 var trHTML = '';
+                $.each(response, function (i, item) {
+                    trHTML += "<tr><td class='maya'>" + item.id + "</td><td>" + item.first_name + "</td><td>" + item.last_name + "</td><td>" + item.age + "</td><td>" + item.gender +  "</td><td><a class='btn btn-primary' id="+ item.id +" role='button'>Update</a><button class='btn btn-danger delete' id ="+ item.id +">Delete</button>"
+                    "</td></tr>";
+                });
+                $('#records_table').append(trHTML);
+                    }
+            });
+    </script>
+    <script>
+$('#records_table').on('click', '.delete', function(){
+        var id = $(this).attr('id');
+        console.log(id);
+        var myurl = 'http://localhost:8000/api/'+id;
+
+        $.ajax({
+            async: true,
+            url:myurl,
+            method:'DELETE',
+            success: function(result){
+                location.reload();
+            }
+        });
+
+});
+    </script>
+
+
+</body>
+</html>
