@@ -21,6 +21,49 @@
         <div class="text-right">
         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">Create</button>
         </div>
+                    <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Create Students</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form>
+                      <div class="form-group">
+                        <label for="first_name">First Name</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="first name here..">
+                      </div>
+                      <div class="form-group">
+                        <label for="last_name">Last Name </label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="last name here...">
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group col-md-6">
+                          <label for="age">Age</label>
+                          <input type="text" class="form-control" id="age" name="age">
+                        </div>
+                        <div class="form-group col-md-4">
+                          <label for="inputState">Gender</label>
+                          <select id="inputState" name="gender" class="form-control">
+                            <option selected>Choose...</option>
+                            <option>F</option>
+                            <option>M</option>
+                          </select>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="screate">Save</button>
+                  </div>
+                </div>
+              </div>
+            </div>
 	</div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
@@ -76,21 +119,37 @@
             });
     </script>
     <script>
-$('#records_table').on('click', '.delete', function(){
-        var id = $(this).attr('id');
-        console.log(id);
-        var myurl = 'http://localhost:8000/api/'+id;
+        $('#records_table').on('click', '.delete', function(){
+                var id = $(this).attr('id');
+                console.log(id);
+                var myurl = 'http://localhost:8000/api/'+id;
 
-        $.ajax({
-            async: true,
-            url:myurl,
-            method:'DELETE',
-            success: function(result){
-                location.reload();
-            }
+                $.ajax({
+                    async: true,
+                    url:myurl,
+                    method:'DELETE',
+                    success: function(result){
+                        location.reload();
+                    }
+                });
+
         });
-
-});
+        $('#screate').click(function(){
+            $.ajax({
+                type : 'POST',
+                url : 'http://localhost:8000/api/create/',
+                data : {
+                    '_token':$('input[name=_token]').val(),
+                    'first_name':$('input[name=first_name]').val(),
+                    'last_name':$('input[name=last_name]').val(),
+                    'age':$('input[name=age]').val(),
+                    'gender':$('select[name=gender]').val()
+                },
+                success: function(data){
+                   location.reload(); 
+                }
+            })
+        });
     </script>
 
 

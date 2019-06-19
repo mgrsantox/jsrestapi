@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from rest_framework import status
 from django.http import Http404
 from .forms import StudentForm
+from rest_framework import generics
 
 
 def homepage(request):
@@ -56,3 +57,7 @@ class Delete_students_List(APIView):
 #             serializer.save()
 #             return Response({'serializer': serializer}, status=status.HTTP_201_CREATED)
 #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class StudentCreate(generics.ListCreateAPIView):
+    queryset = Students.objects.all()
+    serializer_class = studentSerializer
