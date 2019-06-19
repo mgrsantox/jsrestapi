@@ -213,6 +213,9 @@
 
         });
 
+        $('#myCreate').click(function(){ 
+            $("#myForm").trigger('reset');
+        });
         $('#screate').click(function(){
             $.ajax({
                 type : 'POST',
