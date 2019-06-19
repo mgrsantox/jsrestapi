@@ -19,10 +19,10 @@
 	    </tr>
 		</table>
         <div class="text-right">
-        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">Create</button>
+        <button type="button" class="btn btn-success" data-toggle="modal" id="myCreate" data-target="#createModal">Create</button>
         </div>
-                    <!-- Modal -->
-            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <!--  Create Modal -->
+            <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -32,19 +32,19 @@
                     </button>
                   </div>
                   <div class="modal-body">
-                    <form>{% csrf_token %}
+                    <form id="myForm">{% csrf_token %}
                       <div class="form-group">
                         <label for="first_name">First Name</label>
-                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="first name here..">
+                        <input type="text" class="form-control"  name="first_name" placeholder="first name here..">
                       </div>
                       <div class="form-group">
                         <label for="last_name">Last Name </label>
-                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="last name here...">
+                        <input type="text" class="form-control"  name="last_name" placeholder="last name here...">
                       </div>
                       <div class="form-row">
                         <div class="form-group col-md-6">
                           <label for="age">Age</label>
-                          <input type="text" class="form-control" id="age" name="age">
+                          <input type="text" class="form-control" name="age">
                         </div>
                         <div class="form-group col-md-4">
                           <label for="inputState">Gender</label>
@@ -60,6 +60,49 @@
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="screate">Save</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+                    <!--  Update Modal -->
+            <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Create Students</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form>
+                      <div class="form-group">
+                        <label for="first_name">First Name</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" value="">
+                      </div>
+                      <div class="form-group">
+                        <label for="last_name">Last Name </label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" value="">
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group col-md-6">
+                          <label for="age">Age</label>
+                          <input type="text" class="form-control" id="age" name="age" value="">
+                        </div>
+                        <div class="form-group col-md-4">
+                          <label for="inputState">Gender</label>
+                          <select id="gender" name="gender" class="form-control">
+                            <option selected>Choose...</option>
+                            <option>F</option>
+                            <option>M</option>
+                          </select>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="supdate">Save</button>
                   </div>
                 </div>
               </div>
@@ -111,7 +154,7 @@
              success : function (response) {
              			 var trHTML = '';
                 $.each(response, function (i, item) {
-                    trHTML += "<tr><td class='maya'>" + item.id + "</td><td>" + item.first_name + "</td><td>" + item.last_name + "</td><td>" + item.age + "</td><td>" + item.gender +  "</td><td><a class='btn btn-primary' id="+ item.id +" role='button'>Update</a><button class='btn btn-danger delete' id ="+ item.id +">Delete</button>"
+                    trHTML += "<tr><td class='maya'>" + item.id + "</td><td>" + item.first_name + "</td><td>" + item.last_name + "</td><td>" + item.age + "</td><td>" + item.gender +  "</td><td><button class='btn btn-primary update' id ="+ item.id +" data-toggle='modal' data-target='#updateModal'>Update</button><button class='btn btn-danger delete' id ="+ item.id +">Delete</button>"
                     "</td></tr>";
                 });
                 $('#records_table').append(trHTML);
@@ -121,7 +164,6 @@
     <script>
         $('#records_table').on('click', '.delete', function(){
                 var id = $(this).attr('id');
-                console.log(id);
                 var myurl = 'http://localhost:8000/api/'+id;
 
                 $.ajax({
@@ -134,6 +176,40 @@
                 });
 
         });
+        $('#records_table').on('click', '.update', function(){
+                var id = $(this).attr('id');
+                var myurl = 'http://localhost:8000/api/'+id;
+                $( "#first_name" ).change(function() {
+                  $('input[name=first_name]').val($(this).val());
+
+                });
+        $( "#last_name" ).change(function() {
+                  $('input[name=last_name]').val($(this).val());
+
+                });
+        $( "#age" ).change(function() {
+                  $('input[name=age]').val($(this).val());
+
+                });
+        $( "#gender" ).change(function() {
+                  $('input[name=gender]').val($(this).val());
+
+                });
+
+                $.ajax({
+                    async: true,
+                    url:myurl,
+                    method:'GET',
+                    success: function(result){
+                        $('input[name="first_name"]').val(result.first_name);
+                        $('input[name="last_name"]').val(result.last_name);
+                        $('input[name="age"]').val(result.age);
+                        $('select[name="gender"]').val(result.gender);
+                    }
+                });
+
+        });
+
         $('#screate').click(function(){
             $.ajax({
                 type : 'POST',
@@ -148,6 +224,26 @@
                 success: function(data){
                    location.reload(); 
                 }
+            })
+        });
+        $('#supdate').click(function(){
+            var id = $(".update").attr("id");
+            var myurl = 'http://localhost:8000/api/'+id+'/update/';
+
+            $.ajax({
+                type : 'PUT',
+                url : myurl,
+                data : {
+                    '_token':$('input[name=_token]').val(),
+                    'first_name':$('input[name=first_name]').val(),
+                    'last_name':$('input[name=last_name]').val(),
+                    'age':$('input[name=age]').val(),
+                    'gender':$('select[name=gender]').val()
+                },
+                success: function(data){
+                   location.reload();
+
+                },
             })
         });
     </script>
